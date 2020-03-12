@@ -47,12 +47,7 @@ module T::Props
       # We don't need to check for val's included modules in
       # T::Configuration.scalar_types, because T::Configuration.scalar_types
       # are all classes.
-      klass = val.class
-      until klass.nil?
-        return true if T::Configuration.scalar_types.include?(klass.to_s)
-        klass = klass.superclass
-      end
-      false
+      T::Props::Utils.class_of_scalar_type?(val.class)
     end
 
     # We allow custom types to serialize to Arrays, so that we can

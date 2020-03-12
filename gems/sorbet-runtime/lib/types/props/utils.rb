@@ -56,4 +56,12 @@ module T::Props::Utils
   def self.merge_serialized_optional_rule(prop_rules)
     {'_tnilable' => true}.merge(prop_rules.merge('_tnilable' => true))
   end
+
+  def self.class_of_scalar_type?(klass)
+    until klass.nil?
+      return true if T::Configuration.scalar_types.include?(klass.to_s)
+      klass = klass.superclass
+    end
+    false
+  end
 end

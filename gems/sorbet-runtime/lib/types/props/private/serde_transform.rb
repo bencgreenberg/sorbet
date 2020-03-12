@@ -18,12 +18,6 @@ module T::Props
         DESERIALIZE = T.let(Deserialize.new.freeze, Deserialize)
       end
 
-      NO_TRANSFORM_TYPES = T.let(
-        [TrueClass, FalseClass, NilClass, Symbol, String, Numeric].freeze,
-        T::Array[Module],
-      )
-      private_constant :NO_TRANSFORM_TYPES
-
       sig do
         params(
           type: T.any(T::Types::Base, Module),
@@ -63,12 +57,12 @@ module T::Props
           end
         when T::Types::Simple
           raw = type.raw_type
-          if NO_TRANSFORM_TYPES.any? {|cls| raw <= cls}
-            nil
-          elsif raw < T::Props::Serializable
+          if raw < T::Props::Serializable
             handle_serializable_subtype(varname, raw, mode)
           elsif raw.singleton_class < T::Props::CustomType
             handle_custom_type(varname, T.unsafe(raw), mode)
+          elsif T::Props::Utils.class_of_scalar_type?(raw)
+            nil
           else
             "T::Props::Utils.deep_clone_object(#{varname})"
           end
